@@ -1,0 +1,37 @@
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Compiled files
+target/
+dist/
+build/
+*.class
+*.jar
+
+# Logs
+*.log
+logs/
+
+# Node modules
+node_modules/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Vue
+.vue-cli-service 
