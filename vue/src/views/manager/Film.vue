@@ -7,6 +7,7 @@
     </div>
     <div class="card" style="margin-bottom: 5px">
       <el-button type="primary" style="margin-bottom: 10px" @click="handleAdd">新增</el-button>
+      <el-button type="success" style="margin-bottom: 10px" @click="handleDoubanImport">导入豆瓣Top250</el-button>
 
       <el-table :data="data.tableData" stripe>
         <el-table-column prop="name" label="名称" />
@@ -61,7 +62,9 @@
           <el-input :rows="4" type="textarea" v-model="data.form.actors" autocomplete="off" placeholder="请输入演员" />
         </el-form-item>
         <el-form-item label="分类">
-          <el-input v-model="data.form.categoryId" autocomplete="off" placeholder="请输入分类" />
+          <el-select v-model="data.form.categoryName" placeholder="请选择分类" style="width: 100%">
+            <el-option v-for="item in data.categoryList" :key="item.id" :label="item.name" :value="item.name" />
+          </el-select>
         </el-form-item>
         <el-form-item label="国家">
           <el-input v-model="data.form.country" autocomplete="off" placeholder="请输入国家" />
@@ -94,6 +97,7 @@
 import { reactive } from "vue";
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
+import { ElLoading } from "element-plus";
 
 // 文件上传的接口地址
 const uploadUrl = import.meta.env.VITE_BASE_URL + '/files/upload'
@@ -105,7 +109,8 @@ const data = reactive({
   pageSize: 10,
   name: null,
   formVisible: false,
-  form: {}
+  form: {},
+  categoryList: []
 })
 
 const load = () => {
@@ -120,7 +125,14 @@ const load = () => {
     data.total = res.data.total
   })
 }
+
+const loadCategory = () => {
+  request.get('/category/selectAll').then(res => {
+    data.categoryList = res.data
+  })
+}
 load()
+loadCategory()
 
 const reset = () => {
   data.name = null
@@ -182,5 +194,37 @@ const del = (id) => {
 // 处理文件上传的钩子
 const handleImgSuccess = (res) => {
   data.form.cover = res.data  // res.data就是文件上传返回的文件路径，获取到路径后赋值表单的属性
+}
+
+// 添加豆瓣导入方法
+const handleDoubanImport = () => {
+  ElMessageBox.confirm(
+    '确定要从豆瓣导入Top250电影数据吗？这可能需要几分钟时间。',
+    '确认导入',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(() => {
+    const loading = ElLoading.service({
+      lock: true,
+      text: '正在导入电影数据，请稍候...',
+      background: 'rgba(0, 0, 0, 0.7)',
+    })
+    
+    request.post('/api/douban/import').then(res => {
+      if (res.code === '200') {
+        ElMessage.success('导入成功')
+        load() // 刷新列表
+      } else {
+        ElMessage.error(res.msg || '导入失败')
+      }
+    }).finally(() => {
+      loading.close()
+    })
+  }).catch(() => {
+    ElMessage.info('已取消导入')
+  })
 }
 </script>

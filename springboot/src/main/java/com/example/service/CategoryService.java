@@ -55,4 +55,14 @@ public class CategoryService {
         return PageInfo.of(list);
     }
 
+    /**
+     * 根据分类名称查找分类
+     */
+    public Category findByName(String name) {
+        Category category = new Category();
+        category.setName(name);
+        List<Category> list = categoryMapper.selectAll(category);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
 }

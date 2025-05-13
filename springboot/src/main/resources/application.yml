@@ -1,5 +1,9 @@
 server:
   port: 9090
+  tomcat:
+    connection-timeout: 300000
+    max-threads: 200
+    min-spare-threads: 10
 
 # 数据库配置
 spring:

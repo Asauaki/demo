@@ -51,12 +51,15 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="data.form.name" autocomplete="off" />
         </el-form-item>
+        <el-form-item>
+          <el-button type="warning" @click="handleResetPassword(data.form.id)">重置密码</el-button>
+        </el-form-item>
       </el-form>
       <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="data.formVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">保 存</el-button>
-      </span>
+        <span class="dialog-footer">
+          <el-button @click="data.formVisible = false">取 消</el-button>
+          <el-button type="primary" @click="save">保 存</el-button>
+        </span>
       </template>
     </el-dialog>
 
@@ -107,9 +110,17 @@ const handleEdit = (row) => {
   data.formVisible = true
 }
 
-// 新增保存
-const add = () => {
-  request.post('/user/add', data.form).then(res => {
+// 编辑保存
+const update = () => {
+  // 创建一个新对象，不包含密码字段
+  const updateData = {
+    id: data.form.id,
+    username: data.form.username,
+    name: data.form.name,
+    avatar: data.form.avatar,
+    role: data.form.role
+  }
+  request.put('/user/update', updateData).then(res => {
     if (res.code === '200') {
       load()
       ElMessage.success('操作成功')
@@ -120,9 +131,17 @@ const add = () => {
   })
 }
 
-// 编辑保存
-const update = () => {
-  request.put('/user/update', data.form).then(res => {
+// 新增保存
+const add = () => {
+  // 新增时需要设置默认密码
+  const addData = {
+    username: data.form.username,
+    name: data.form.name,
+    avatar: data.form.avatar,
+    role: data.form.role,
+    password: '123' // 默认密码
+  }
+  request.post('/user/add', addData).then(res => {
     if (res.code === '200') {
       load()
       ElMessage.success('操作成功')
@@ -162,6 +181,19 @@ const reset = () => {
 // 处理文件上传的钩子
 const handleImgSuccess = (res) => {
   data.form.avatar = res.data  // res.data就是文件上传返回的文件路径，获取到路径后赋值表单的属性
+}
+
+// 重置密码
+const handleResetPassword = (id) => {
+  ElMessageBox.confirm('确定要重置该用户的密码吗？重置后密码将变为：123456', '重置密码确认', { type: 'warning' }).then(res => {
+    request.post('/user/resetPassword/' + id).then(res => {
+      if (res.code === '200') {
+        ElMessage.success('密码已重置为：123456')
+      } else {
+        ElMessage.error(res.msg)
+      }
+    })
+  }).catch(err => {})
 }
 
 load()

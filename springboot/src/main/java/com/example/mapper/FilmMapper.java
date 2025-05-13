@@ -16,4 +16,7 @@ public interface FilmMapper {
     List<Film> selectAll(Film film);
 
     Film selectById(Integer id);
+
+    @Select("select * from film where name = #{name}")
+    Film selectByName(String name);
 }

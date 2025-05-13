@@ -4,7 +4,7 @@ import axios from "axios";
 
 const request = axios.create({
     baseURL: '/api',
-    timeout: 30000  // 后台接口超时时间设置
+    timeout: 300000  // 后台接口超时时间设置为5分钟
 })
 
 // request 拦截器

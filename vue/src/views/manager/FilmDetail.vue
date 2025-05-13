@@ -130,6 +130,7 @@ import {ElMessage} from "element-plus";
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import {onBeforeUnmount, ref, shallowRef} from "vue";
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'// 引入wangEditor相关组件和样式
+import axios from "axios";
 
 const data = reactive({
   id: router.currentRoute.value.query.id,
@@ -158,8 +159,36 @@ const mode = 'default'
 const editorConfig = { MENU_CONF: {} }
 // 图片上传配置
 editorConfig.MENU_CONF['uploadImage'] = {
-  server: baseUrl + '/files/wang/upload',  // 服务端图片上传接口
-  fieldName: 'file'  // 服务端图片上传接口参数
+  server: baseUrl + '/files/upload',  // 修改为正确的上传接口
+  fieldName: 'file',  // 服务端图片上传接口参数
+  maxFileSize: 10 * 1024 * 1024,  // 限制图片大小 10M
+  maxNumberOfFiles: 10,  // 最多可上传 10 个文件
+  allowedFileTypes: ['image/*'],  // 只允许上传图片
+  meta: {},  // 自定义上传参数
+  metaWithUrl: true,  // 将 meta 信息拼接到 url 中
+  withCredentials: false,  // 跨域是否传递 cookie
+  timeout: 5 * 1000,  // 上传超时时间
+  // 自定义上传图片
+  customUpload(file, insertFn) {
+    const formData = new FormData()
+    formData.append('file', file)
+    // 使用 axios 直接发送请求
+    axios.post(baseUrl + '/files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(res => {
+      if (res.data.code === '200') {
+        // 上传成功，插入图片
+        insertFn(res.data.data)
+      } else {
+        ElMessage.error(res.data.msg || '图片上传失败')
+      }
+    }).catch(err => {
+      console.error('上传失败:', err)
+      ElMessage.error('图片上传失败')
+    })
+  }
 }
 // 编辑器生命周期管理
 onBeforeUnmount(() => {
@@ -185,8 +214,13 @@ const addComment = (type) => {
 
 // 新增评论的方法
 const save = () => {
+  if (!data.user?.id) {
+    ElMessage.error('请先登录')
+    return
+  }
   data.form.filmId = data.id
   data.form.userId = data.user.id
+  data.form.userName = data.user.name  // 添加用户名
   request.post('/comment/add', data.form).then(res => {
     if (res.code === '200') {
       data.formVisible = false
@@ -194,7 +228,7 @@ const save = () => {
       loadShortComment()
       loadLongComment()
     } else {
-      ElMessage.success(res.msg)
+      ElMessage.error(res.msg)  // 修改为error提示
     }
   })
 }
@@ -217,8 +251,8 @@ loadShortComment()
 const loadLongComment = () => {
   request.get('/comment/selectPage', {
     params: {
-      pageNum: data.pageNumShort,
-      pageSize: data.pageSizeShort,
+      pageNum: data.pageNumLong,
+      pageSize: data.pageSizeLong,
       filmId: data.id,
       type: '长评'
     }

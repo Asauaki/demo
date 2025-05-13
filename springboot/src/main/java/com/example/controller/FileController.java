@@ -29,7 +29,10 @@ public class FileController {
      * 文件上传
      */
     @PostMapping("/upload")
-    public Result upload(MultipartFile file) {
+    public Result upload(@RequestParam("file") MultipartFile file) {
+        if (file == null) {
+            return Result.error("文件不能为空");
+        }
         // 定义文件的唯一标识
         String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
         // 拼接完整的文件存储路径
@@ -42,6 +45,7 @@ public class FileController {
             FileUtil.writeBytes(file.getBytes(), realFilePath);
         } catch (IOException e) {
             System.out.println("文件上传错误");
+            return Result.error("文件上传失败");
         }
          // 返回可访问的URL
         String url = fileBaseUrl + "/files/download/" + fileName;

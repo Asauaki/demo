@@ -5,6 +5,7 @@ import com.example.entity.User;
 import com.example.service.UserService;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,6 +74,20 @@ public class UserController {
                              @RequestParam(defaultValue = "10") Integer pageSize) {
         PageInfo<User> page = userService.selectPage(user, pageNum, pageSize);
         return Result.success(page);
+    }
+
+    /**
+     * 重置密码
+     */
+    @PostMapping("/resetPassword/{id}")
+    @Transactional(rollbackFor = Exception.class)
+    public Result resetPassword(@PathVariable Integer id) {
+        try {
+            userService.resetPassword(id);
+            return Result.success();
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 
 }

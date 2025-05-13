@@ -1,7 +1,9 @@
 package com.example.controller;
 
 import com.example.common.Result;
+import com.example.entity.Category;
 import com.example.entity.Film;
+import com.example.service.CategoryService;
 import com.example.service.FilmService;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
@@ -16,11 +18,21 @@ public class FilmController {
     @Resource
     private FilmService filmService;
 
+    @Resource
+    private CategoryService categoryService;
+
     /**
      * 新增
      */
     @PostMapping("/add")
     public Result add(@RequestBody Film film) {
+        // 根据分类名称查找分类ID
+        Category category = categoryService.findByName(film.getCategoryName());
+        if (category != null) {
+            film.setCategoryId(category.getId());
+        } else {
+            return Result.error("分类不存在");
+        }
         filmService.add(film);
         return Result.success();
     }
@@ -30,6 +42,13 @@ public class FilmController {
      */
     @PutMapping("/update")
     public Result update(@RequestBody Film film) {
+        // 根据分类名称查找分类ID
+        Category category = categoryService.findByName(film.getCategoryName());
+        if (category != null) {
+            film.setCategoryId(category.getId());
+        } else {
+            return Result.error("分类不存在");
+        }
         filmService.update(film);
         return Result.success();
     }

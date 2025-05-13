@@ -19,7 +19,7 @@
 
     <update id="updateById" parameterType="com.example.entity.User">
         update user set username = #{username}, password = #{password}, name = #{name}, avatar = #{avatar}, role = #{role}
-        where id = #{id} 
+        where id = #{id}
     </update>
 
 </mapper>

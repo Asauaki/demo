@@ -53,6 +53,13 @@
             </exclusions>
         </dependency>
 
+        <!-- Jsoup HTML解析器 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.15.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
