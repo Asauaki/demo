@@ -2,13 +2,13 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.CategoryMapper">
+<mapper namespace="com.aki.mapper.CategoryMapper">
 
-    <insert id="insert" parameterType="com.example.entity.Category">
+    <insert id="insert" parameterType="com.aki.entity.Category">
         insert into category(name) values (#{name})
     </insert>
 
-    <update id="updateById" parameterType="com.example.entity.Category">
+    <update id="updateById" parameterType="com.aki.entity.Category">
         update category set name = #{name}
         where id = #{id}
     </update>
@@ -17,7 +17,7 @@
         delete from category where id = #{id}
     </delete>
 
-    <select id="selectAll" resultType="com.example.entity.Category">
+    <select id="selectAll" resultType="com.aki.entity.Category">
         select * from category
         <where>
             <if test="name != null">and name like concat('%', #{name}, '%')</if>

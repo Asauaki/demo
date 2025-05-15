@@ -2,14 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.CommentMapper">
+<mapper namespace="com.aki.mapper.CommentMapper">
 
-    <insert id="insert" parameterType="com.example.entity.Comment">
+    <insert id="insert" parameterType="com.aki.entity.Comment">
         insert into comment(film_id, score, comment, user_id, time, type) values (#{filmId}, #{score}, #{comment},
         #{userId}, #{time}, #{type})
     </insert>
 
-    <update id="updateById" parameterType="com.example.entity.Comment">
+    <update id="updateById" parameterType="com.aki.entity.Comment">
         update comment set film_id = #{filmId}, score = #{score}, comment = #{comment}, user_id = #{userId},
         time = #{time}, type = #{type}
         where id = #{id}
@@ -19,7 +19,7 @@
         delete from comment where id = #{id}
     </delete>
 
-    <select id="selectAll" resultType="com.example.entity.Comment">
+    <select id="selectAll" resultType="com.aki.entity.Comment">
         select comment.*, film.name as filmName, 
         COALESCE(user.name, admin.name) as userName 
         from comment

@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.UserMapper">
+<mapper namespace="com.aki.mapper.UserMapper">
 
-    <select id="selectAll" resultType="com.example.entity.User">
+    <select id="selectAll" resultType="com.aki.entity.User">
         select * from user
         <where>
             <if test="name != null"> and name like concat('%', #{name}, '%')</if>
@@ -12,14 +12,14 @@
         order by id desc
     </select>
 
-    <insert id="insert" parameterType="com.example.entity.User" useGeneratedKeys="true">
-        insert into user(id, username, password, name, avatar, role)
-        values (#{id}, #{username}, #{password}, #{name}, #{avatar}, #{role})
+    <insert id="insert" parameterType="com.aki.entity.User" useGeneratedKeys="true">
+        insert into user(username, password, name, phone, email)
+        values(#{username}, #{password}, #{name}, #{phone}, #{email})
     </insert>
 
-    <update id="updateById" parameterType="com.example.entity.User">
-        update user set username = #{username}, password = #{password}, name = #{name}, avatar = #{avatar}, role = #{role}
-        where id = #{id}
+    <update id="updateById" parameterType="com.aki.entity.User">
+        update user set username=#{username}, password=#{password}, name=#{name}, phone=#{phone}, email=#{email}
+        where id=#{id}
     </update>
 
 </mapper>
